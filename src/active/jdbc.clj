@@ -1,7 +1,8 @@
 (ns active.jdbc
   (:require [next.jdbc :as next]
             [active.jdbc.query :as q])
-  (:import [java.sql Statement]))
+  (:import [java.sql Statement]
+           [clojure.lang IReduceInit]))
 
 (defn prepare
   (^Statement [connection sql-params]
@@ -28,8 +29,17 @@
   ([connectable sql-params opts]
    (wrap next/execute-one! connectable sql-params opts)))
 
+(defn- delayed-reduction [g]
+  (reify IReduceInit
+    (reduce [this f init]
+      (g (fn [coll]
+           (reduce f init coll))))))
+
 (defn plan
   ([connectable sql-params]
    (plan connectable sql-params nil))
   ([connectable sql-params opts]
-   (wrap next/plan connectable sql-params opts)))
+   (delayed-reduction
+    (fn [red]
+      (wrap (comp red next/plan)
+            connectable sql-params opts)))))
