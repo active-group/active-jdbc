@@ -13,9 +13,10 @@
   (AbstractQuery. f))
 
 (defn resolve [query connection]
-  (if (abstract? query)
-    ((:f query) connection)
-    query))
+  (loop [query query]
+    (if (abstract? query)
+      (recur ((:f query) connection))
+      query)))
 
 (def empty [""])
 
