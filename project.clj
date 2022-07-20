@@ -1,4 +1,4 @@
-(defproject de.active-group/active-jdbc "0.2.0"
+(defproject de.active-group/active-jdbc "0.2.1"
   :description "Functions to work with JDBC building upon next.jdbc."
   :url "http://github.com/active-group/active-jdbc"
   
