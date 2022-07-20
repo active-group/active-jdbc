@@ -21,7 +21,14 @@
   ([connectable sql-params opts]
    (wrap next/execute! connectable sql-params opts)))
 
-#_(defn execute-batch!)
+(defn execute-batch!
+  ([connectable sql param-groups]
+   (execute-batch! connectable sql param-groups nil))
+  ([connectable sql param-groups opts]
+   ;; Note: the sql should probably have no parameters set yet; not sure if next could handle that.
+   (next/on-connection [connection connectable]
+                       (with-open [stmt (prepare connection sql opts)]
+                         (next/execute-batch! stmt param-groups opts)))))
 
 (defn execute-one!
   ([connectable sql-params]
